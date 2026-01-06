@@ -661,9 +661,10 @@ msg_t rs485_lld_SendMsgWithACK(RS485Driver *rs485p, RS485Msg_t *datap, uint8_t r
 
   while (count != repeat) {
     // Wait for READY, max time is whole packet + send ACK
-    while ((rs485p->trcState != TRC_READY) && (wait != RS485_PACKET_SIZE + RS485_HEADER_SIZE)) {
-      chThdSleepMicroseconds(rs485p->oneByteTimeUS);
-      wait++;
+    wait = 0;
+    while ((rs485p->trcState != TRC_READY) && (wait <= RS485_PACKET_SIZE + RS485_HEADER_SIZE)) {
+      chThdSleepMicroseconds(rs485p->oneByteTimeUS*2);
+      wait+=2;
     }
 
     if (rs485p->trcState == TRC_READY) {
